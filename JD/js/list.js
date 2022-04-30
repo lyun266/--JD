@@ -52,12 +52,19 @@ class List {
         // console.log(eve.target); //点击 立即抢购 获取到a标签
         //给每条li标签的商品  添加商品id   goods_id
 
-        //用户登录才有id  所以需要判断是否用户登录
-        
+        //用户登录才有id  所以需要  判断是否用户登录   登录之后就会存到local storage    如果能够获取到token,则表示登录,获取不到表示未登录
+        //获取值(getItem)
+        let token=localStorage.getItem('token')
+        //跳转  如果没获取值 就跳转到登录页面
+        if(!token) location.assign('./login.html?Return=./list.html');
+
+
+
+         
     }
 
     //都要获取节点,封装一个函数
-    $(tag) {
+    $(tag) { 
         let res = document.querySelectorAll(tag);
         return res.length == 1 ? res[0] : res;
     }
