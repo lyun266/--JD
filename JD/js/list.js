@@ -4,7 +4,7 @@ class List {
         this.getData();
 
         //将加入购物车,使用事件委托
-        this.$('.sk_bd ul').addEventListener('click',this.addCartFn.bind(this))//默认是指向ul,改变this指向当前实例化对象
+        this.$('.sk_bd ul').addEventListener('click', this.addCartFn.bind(this))//默认是指向ul,改变this指向当前实例化对象
 
     }
 
@@ -23,7 +23,7 @@ class List {
             //遍历list数据
             data.list.forEach(goods => {
                 // console.log(goods);  //遍历出每一条商品信息
-                html += ` <li class="sk_goods" data_id="${goods.goods_id}">  
+                html += ` <li class="sk_goods" data-id="${goods.goods_id}">  
                 <a href="detail.html"><img src="
                 ${goods.img_big_logo}" alt=""></a>
                 <h5 class="sk_goods_title">${goods.title}</h5>
@@ -39,14 +39,16 @@ class List {
                 <a href="#none"  class="sk_goods_buy">立即抢购</a>
             </li>`;
             });
-             // <a href="detail.html" class="sk_goods_buy">立即抢购</a> 
-            this.$('.sk_bd ul').innerHTML=html;
+            // <a href="detail.html" class="sk_goods_buy">立即抢购</a> 
+            this.$('.sk_bd ul').innerHTML = html;
+
         }
+
 
     }
 
     //加入购物车的方法
-    addCartFn(eve){
+    async addCartFn(eve) {
         // console.log(this);//获取当前的实例化
         //根据eve 获取事件源
         // console.log(eve.target); //点击 立即抢购 获取到a标签
@@ -54,17 +56,63 @@ class List {
 
         //用户登录才有id  所以需要  判断是否用户登录   登录之后就会存到local storage    如果能够获取到token,则表示登录,获取不到表示未登录
         //获取值(getItem)
-        let token=localStorage.getItem('token')
+        let token = localStorage.getItem('token')
         //跳转  如果没获取值 就跳转到登录页面
-        if(!token) location.assign('./login.html?Return=./list.html');
+        if (!token) location.assign('./login.html?Return=./list.html');
+
+        //判断是否点击的是a标签 
+        //商品id的获取
+        if (eve.target.classList.contains('sk_goods_buy')) {
+            let lisObj = eve.target.parentNode;//获取到父级li标签
+            // console.log(lisObj);
+            let goodsId = lisObj.dataset.id;
+            // console.log(goodsId);
+            let userId = localStorage.getItem('user_id');
+
+            //两个id必须都具备,才能发送请求
+            if (!userId || !goodsId) throw new Error('两个id存在问题,请打印...');
+
+            //authorization   字段头
+            axios.defaults.headers.common['authorization'] = token;
+            //Content-Type
+            axios.defaults.headers['Content-Type'] = 'application/x-www-form-urlencoded';
+            let param = `id=${userId}&goodsId=${goodsId}`
+            //如果用户登录,则将数据信息添加到购物车
+            //解构
+            let { data, status } = await axios.post('http://localhost:8888/cart/add', param)
+            // console.log(data, status);
+
+            // 接收完之后,判断data和status值
+            if(status==200){
+                console.log(data);  //为了获取到code值
+                if(data.code==1){ //购买成功
+                    layer.open({
+                        content:'加入购物车成功...',
+                        btn:['去购物车结算','留在当前页面']
+                        ,yes: function(index, layero){
+                            //按钮【按钮一】的回调
+                            //实现跳转
+                            location.assign('./cart.html')
+                          }
+                          ,btn2: function(index, layero){
+                            //按钮【按钮二】的回调
+                            //return false 开启该代码可禁止点击该按钮关闭
+                            
+                          }
+                    })
+                }
+            }
+        }
+        //商品id或用户id获取
+        // console.log(eve.target);
 
 
 
-         
+
     }
 
     //都要获取节点,封装一个函数
-    $(tag) { 
+    $(tag) {
         let res = document.querySelectorAll(tag);
         return res.length == 1 ? res[0] : res;
     }

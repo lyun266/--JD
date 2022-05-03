@@ -23,15 +23,18 @@ class Login {
         // console.log(username,password);
 
         //注意要发送post请求   地址,{传入两个参数}
+        //必须设置内容的类型,默认时json格式
         axios.defaults.headers['Content-Type'] = 'application/x-www-form-urlencoded';
         //原生ajax 写post请求传递参数 xhr.setRequestHeader
         //对参数进行编码
+        //数据必须拼接好,以原生的方式拼接
         let data = `username=${username}&password=${password}`;
         axios.post('http://localhost:8888/users/login', data).then(res => {
             let { status, data } = res;
             console.log(data);
             if (status == 200) {   //请求成功的
                 //判断是否登录成功,根据里面的code码
+
                 if (data.code == 1) {   //登录成功
                     //token 是登录的标识符
                     //设置    数据,存到token和data.user.id
@@ -43,10 +46,16 @@ class Login {
                     // console.log(location.search.split('=')[1]);
 
                     //跳转页面  从哪里来跳转到哪里去  跳转到list.html
-                    location.assign(location.search.split('=')[1])
+                    location.assign(location.search.split('=')[1]);
+
+                } else { //登录失败,就提示输入错误
+                    layer.open({
+                        title: '登录提示'
+                        , content: '用户名或密码输入错误'
+                    });
                 }
 
-                
+
 
 
 

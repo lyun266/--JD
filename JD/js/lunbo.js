@@ -27,7 +27,7 @@ var mySwiper = new Swiper('.swiper', {
     },
 
     // 如果需要滚动条
-    // scrollbar: {
-    //     el: '.swiper-scrollbar',
-    // },
+    scrollbar: {
+        el: '.swiper-scrollbar',
+    },
 })
