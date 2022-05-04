@@ -38,6 +38,9 @@
     border: 1px solid #ccc;
     cursor: move;
 }
+.small {
+    position: relative;
+}
 .big {
     display: none;
     position: absolute;
