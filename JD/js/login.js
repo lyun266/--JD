@@ -6,7 +6,6 @@ class Login {
 
     clickFn() {
 
-
         //获取页面form表单
         let forms = document.forms[0].elements;
         // console.log(forms);  //得到form 里的password和uname

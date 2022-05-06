@@ -1,18 +1,20 @@
 class List {
     constructor() {
-        //  给属性赋值
+        //  给属性赋值,调用其他方法
         this.getData();
 
         //将加入购物车,使用事件委托
         this.$('.sk_bd ul').addEventListener('click', this.addCartFn.bind(this))//默认是指向ul,改变this指向当前实例化对象
 
+        this.getCateList();
     }
 
     // 获取数据的方法  
     //获取大量的数据,渲染到页面中去,需要async await
+    // async await 使该方法变成同步的了   等待promise对象解析完成
     async getData() {
-        // 等待promise对象解析完成
-        let { data, status } = await axios.get('http://localhost:8888/goods/list?current=1')  //返回的是一个promise对象
+        // 等待promise对象解包完成
+        let { data, status } = await axios.get('http://localhost:8888/goods/list?current=4')  //返回的是一个promise对象
         // console.log(data,status);
 
         //判断返回值的状态,追加数据
@@ -47,11 +49,11 @@ class List {
 
     }
 
-    //加入购物车的方法
+    //加入购物车的方法  
     async addCartFn(eve) {
         // console.log(this);//获取当前的实例化
         //根据eve 获取事件源
-        // console.log(eve.target); //点击 立即抢购 获取到a标签
+        // console.log( eve.target); //点击 立即抢购 获取到a标签
         //给每条li标签的商品  添加商品id   goods_id
 
         //用户登录才有id  所以需要  判断是否用户登录   登录之后就会存到local storage    如果能够获取到token,则表示登录,获取不到表示未登录
@@ -60,6 +62,7 @@ class List {
         //跳转  如果没获取值 就跳转到登录页面
         if (!token) location.assign('./login.html?Return=./list.html');
 
+        //如果用户登录,则将数据信息添加到购物车中-->购物车端口
         //判断是否点击的是a标签 
         //商品id的获取
         if (eve.target.classList.contains('sk_goods_buy')) {
@@ -110,6 +113,11 @@ class List {
 
 
     }
+
+    // async getCateList(){
+    //     let res=await axios.get('http://localhost:8888/goods/category');
+    //     console.log(res);
+    // }
 
     //都要获取节点,封装一个函数
     $(tag) {
